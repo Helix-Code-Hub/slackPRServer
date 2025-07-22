@@ -20,7 +20,7 @@ def verify_signature(data, signature):
     expected_signature = hmac.new(secret.encode(), data, hashlib.sha256).hexdigest()
     return hmac.compare_digest(expected_signature, signature)
 
-@app.route('/github-webhook', methods=['POST'])
+@app.route('/', methods=['POST'])
 def github_webhook():
     signature = request.headers.get('X-Hub-Signature-256')
     if not signature:
@@ -54,6 +54,3 @@ def github_webhook():
             return '', 204
         
     return '', 204
-    
-if __name__ == '__main__':
-    app.run()
