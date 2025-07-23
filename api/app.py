@@ -14,7 +14,7 @@ def verify_signature(data, signature):
     sha_name, signature = signature.split('=')
     if sha_name != 'sha256':
         return False
-    secret = os.environ.get('WEBHOOK_SECRET')
+    secret = os.environ.get('GITHUB_WEBHOOK_SECRET')
     if not secret:
         return False
     expected_signature = hmac.new(secret.encode(), data, hashlib.sha256).hexdigest()
@@ -52,5 +52,3 @@ def github_webhook():
                 return 'Message sent to Slack', 200
             
             return '', 204
-        
-    return '', 204
