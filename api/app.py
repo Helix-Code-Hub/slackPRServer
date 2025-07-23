@@ -50,5 +50,3 @@ def github_webhook():
                 return 'Error sending message to Slack', 500
             else:
                 return 'Message sent to Slack', 200
-            
-            return '', 204
