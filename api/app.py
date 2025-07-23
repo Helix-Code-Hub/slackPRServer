@@ -22,7 +22,6 @@ def verify_signature(data, signature):
 
 @app.route('/api/github-webhook', methods=['POST'])
 def github_webhook():
-    return '', 200
     signature = request.headers.get('X-Hub-Signature-256')
     if not signature:
         abort(400, 'Missing signature header')
