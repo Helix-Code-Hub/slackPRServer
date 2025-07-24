@@ -44,12 +44,37 @@ def github_webhook():
                 pr_url = pr['html_url']
                 pr_user = pr['user']['login']
                 repo_name = payload['repository']['name']
+                assignees = pr.get('assignees', [])
+                if assignees:
+                    assignee_names = ', '.join(assignee['login'] for assignee in assignees)
+                    slack_message = {
+                        'text': f'🆕 New PR opened in {repo_name} by {pr_user} and assigned to {assignee_names}: *<{pr_url}|{pr_title}>*'
+                    }
+                else:
+                    assignee_names = 'No assignees'
+                    slack_message = {
+                        'text': f'🆕 New PR opened in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
+                    }
 
-
+                resp = requests.post(SLACK_WEBHOOK_URL, json=slack_message)
+                if resp.status_code != 200:
+                    app.logger.error(f'Error sending message to Slack: {resp.text}')
+                    return 'Error sending message to Slack', 500
+                return 'Message sent to Slack', 200
+            
+            if action == 'assigned':
+                pr = payload['pull_request']
+                pr_title = pr['title']
+                pr_url = pr['html_url']
+                pr_user = pr['user']['login']
+                repo_name = payload['repository']['name']
+                assignees = pr.get('assignees', [])
+                assignee_names = ', '.join(assignee['login'] for assignee in assignees)
+                
                 slack_message = {
-                    'text': f'🆕 New PR opened in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
-                }
-
+                        'text': f'👤 PR assigned to {assignee_names} in {repo_name}: *<{pr_url}|{pr_title}>*'
+                    }
+                
                 resp = requests.post(SLACK_WEBHOOK_URL, json=slack_message)
                 if resp.status_code != 200:
                     app.logger.error(f'Error sending message to Slack: {resp.text}')
