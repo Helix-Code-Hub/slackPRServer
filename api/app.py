@@ -47,7 +47,7 @@ def github_webhook():
 
 
                 slack_message = {
-                    'text': f'🔔 New PR opened in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
+                    'text': f'🆕 New PR opened in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
                 }
 
                 resp = requests.post(SLACK_WEBHOOK_URL, json=slack_message)
@@ -65,7 +65,7 @@ def github_webhook():
                     repo_name = payload['repository']['name']
 
                     slack_message = {
-                        'text': f'🔒 PR merged in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
+                        'text': f'🔀 PR merged in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
                     }
 
                     resp = requests.post(SLACK_WEBHOOK_URL, json=slack_message)
