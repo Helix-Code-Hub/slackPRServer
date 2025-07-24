@@ -43,9 +43,11 @@ def github_webhook():
                 pr_title = pr['title']
                 pr_url = pr['html_url']
                 pr_user = pr['user']['login']
+                repo_name = payload['repository']['name']
+
 
                 slack_message = {
-                    'text': f'🔔 New PR opened by {pr_user}: *<{pr_url}|{pr_title}>*'
+                    'text': f'🔔 New PR opened in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
                 }
 
                 resp = requests.post(SLACK_WEBHOOK_URL, json=slack_message)
@@ -53,6 +55,24 @@ def github_webhook():
                     app.logger.error(f'Error sending message to Slack: {resp.text}')
                     return 'Error sending message to Slack', 500
                 return 'Message sent to Slack', 200
+            
+            if action == 'closed':
+                pr = payload['pull_request']
+                if pr.get('merged'):
+                    pr_title = pr['title']
+                    pr_url = pr['html_url']
+                    pr_user = pr['user']['login']
+                    repo_name = payload['repository']['name']
+
+                    slack_message = {
+                        'text': f'🔒 PR merged in {repo_name} by {pr_user}: *<{pr_url}|{pr_title}>*'
+                    }
+
+                    resp = requests.post(SLACK_WEBHOOK_URL, json=slack_message)
+                    if resp.status_code != 200:
+                        app.logger.error(f'Error sending message to Slack: {resp.text}')
+                        return 'Error sending message to Slack', 500
+                    return 'Message sent to Slack', 200
         
         return '', 204
 
